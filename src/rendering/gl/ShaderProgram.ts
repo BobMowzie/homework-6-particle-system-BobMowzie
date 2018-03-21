@@ -95,33 +95,67 @@ class ShaderProgram {
     }
   }
 
-  draw(d: Drawable) {
-    this.use();
+  draw(d: Drawable, instanced: boolean) {
+    if (instanced) {
+      gl.enable(gl.BLEND);
+      this.use();
 
-    if (this.attrPos != -1 && d.bindPos()) {
-      gl.enableVertexAttribArray(this.attrPos);
-      gl.vertexAttribPointer(this.attrPos, 4, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(this.attrPos, 0); // Advance 1 index in pos VBO for each vertex
+      if (this.attrPos != -1 && d.bindPos()) {
+        gl.enableVertexAttribArray(this.attrPos);
+        gl.vertexAttribPointer(this.attrPos, 4, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribDivisor(this.attrPos, 0); // Advance 1 index in pos VBO for each vertex
+      }
+
+      if (this.attrCol != -1 && d.bindCol()) {
+        gl.enableVertexAttribArray(this.attrCol);
+        gl.vertexAttribPointer(this.attrCol, 4, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribDivisor(this.attrCol, 1); // Advance 1 index in col VBO for each drawn instance
+      }
+
+      if (this.attrTranslate != -1 && d.bindTranslate()) {
+        gl.enableVertexAttribArray(this.attrTranslate);
+        gl.vertexAttribPointer(this.attrTranslate, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribDivisor(this.attrTranslate, 1); // Advance 1 index in translate VBO for each drawn instance
+      }
+
+      d.bindIdx();
+      gl.drawElementsInstanced(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0, d.numInstances);
+
+      if (this.attrPos != -1) gl.disableVertexAttribArray(this.attrPos);
+      if (this.attrCol != -1) gl.disableVertexAttribArray(this.attrCol);
+      if (this.attrTranslate != -1) gl.disableVertexAttribArray(this.attrTranslate);
+
+      gl.disable(gl.BLEND);
     }
+    else {
+      gl.enable(gl.DEPTH_TEST);
+      gl.enable(gl.BLEND);
+      this.use();
 
-    if (this.attrCol != -1 && d.bindCol()) {
-      gl.enableVertexAttribArray(this.attrCol);
-      gl.vertexAttribPointer(this.attrCol, 4, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(this.attrCol, 1); // Advance 1 index in col VBO for each drawn instance
+      if (this.attrPos != -1 && d.bindPos()) {
+        gl.enableVertexAttribArray(this.attrPos);
+        gl.vertexAttribPointer(this.attrPos, 4, gl.FLOAT, false, 0, 0);
+      }
+
+      if (this.attrNor != -1 && d.bindNor()) {
+        gl.enableVertexAttribArray(this.attrNor);
+        gl.vertexAttribPointer(this.attrNor, 4, gl.FLOAT, false, 0, 0);
+      }
+
+      if (this.attrCol != -1 && d.bindCol()) {
+        gl.enableVertexAttribArray(this.attrCol);
+        gl.vertexAttribPointer(this.attrCol, 4, gl.FLOAT, false, 0, 0);
+      }
+
+      d.bindIdx();
+      gl.drawElements(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0);
+
+      if (this.attrPos != -1) gl.disableVertexAttribArray(this.attrPos);
+      if (this.attrNor != -1) gl.disableVertexAttribArray(this.attrNor);
+      if (this.attrCol != -1) gl.disableVertexAttribArray(this.attrCol);
+      gl.disable(gl.DEPTH_TEST);
+      gl.disable(gl.BLEND);
     }
-
-    if (this.attrTranslate != -1 && d.bindTranslate()) {
-      gl.enableVertexAttribArray(this.attrTranslate);
-      gl.vertexAttribPointer(this.attrTranslate, 3, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(this.attrTranslate, 1); // Advance 1 index in translate VBO for each drawn instance
-    }
-
-    d.bindIdx();
-    gl.drawElementsInstanced(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0, d.numInstances);
-
-    if (this.attrPos != -1) gl.disableVertexAttribArray(this.attrPos);
-    if (this.attrCol != -1) gl.disableVertexAttribArray(this.attrCol);
-    if (this.attrTranslate != -1) gl.disableVertexAttribArray(this.attrTranslate);
   }
 };
 
