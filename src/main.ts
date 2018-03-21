@@ -179,9 +179,9 @@ function main() {
   function tick() {
     camera.update();
     if (controls.mode == 0) {
-      camera.controls.zoomSpeed = 1;
+      camera.controls.zoomSpeed = 0;
       camera.controls.rotateSpeed = 1;
-      camera.controls.translateSpeed = 1;
+      camera.controls.translateSpeed = 0;
     }
     else {
       camera.controls.zoomSpeed = 0;
@@ -269,8 +269,8 @@ function main() {
 
     var angle = Math.tan(Math.PI * 0.5 * camera.fovy / 180.);
     var dist = vec3.dist(camera.position, camera.target);
-    var xx = vec3.scale(vec3.create(), camera.right, dist * (2 * ((x) * 1/canvas.width) - 1) * angle * camera.aspectRatio); 
-    var yy = vec3.scale(vec3.create(), camera.up, dist * (1 - 2 * ((y) * 1/canvas.height)) * angle);
+    var xx = vec3.scale(vec3.create(), camera.right, dist * 1.3 * (2 * ((x) * 1/canvas.width) - 1) * angle * camera.aspectRatio); 
+    var yy = vec3.scale(vec3.create(), camera.up, dist * 1.3 * (1 - 2 * ((y) * 1/canvas.height)) * angle);
     var point = vec3.add(vec3.create(), xx, yy);
     vec3.add(point, point, camera.target);
   
